@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import { v4 as uuidv4 } from 'uuid';
 import "react-toastify/dist/ReactToastify.css";
 
 const Manager = () => {
@@ -16,7 +17,7 @@ const Manager = () => {
   }, []);
 
   const copyText = (text) => {
-    toast('copied to clipboard', {
+    toast("copied to clipboard", {
       position: "top-right",
       autoClose: 5000,
       hideProgressBar: false,
@@ -24,9 +25,9 @@ const Manager = () => {
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
-      theme: "light"
-      });
-      
+      theme: "light",
+    });
+
     navigator.clipboard.writeText(text);
   };
 
@@ -37,19 +38,37 @@ const Manager = () => {
       passwordRef.current.type = "password";
     } else {
       ref.current.src = "images/eyeClosed_2.png";
-      passwordRef.current.type = "text";
+      passwordRef.current.type = "text"
     }
-  };
+  }
 
   const savePassword = () => {
-    setpasswordArray([...passwordArray, form]);
-    localStorage.setItem("passwords", JSON.stringify([...passwordArray, form]));
-    console.log([...passwordArray, form]);
-  };
+    setpasswordArray([...passwordArray, {...form, id: uuidv4()}])
+    localStorage.setItem("passwords", JSON.stringify([...passwordArray, {...form, id:uuidv4()}]))
+    console.log([...passwordArray, form])
+    setform({ site: "", username: "", password: "" })
+  }
+
+  const deletePassword = (id) => {
+    console.log("Deleting password with ID", id)
+    let c = confirm("Are u sure?")
+    if(c){
+      setpasswordArray(passwordArray.filter(item=>item.id!==id));
+      localStorage.setItem("passwords", JSON.stringify(passwordArray.filter(item=>item.id!==id)));
+    }
+    
+  }
+  const editPassword = (id) => {
+    console.log("Editing password with ID", id)
+    setform(passwordArray.filter(i=>i.id===id)[0])
+    setpasswordArray(passwordArray.filter(item=>item.id!==id));
+ 
+  }
+
 
   const handleChange = (e) => {
     setform({ ...form, [e.target.name]: e.target.value });
-  };
+  }
 
   return (
     <>
@@ -130,7 +149,7 @@ const Manager = () => {
               src="https://cdn.lordicon.com/ftndcppj.json"
               trigger="hover"
             ></lord-icon>
-            Add Password
+            Save
           </button>
         </div>
         <div className="passwords">
@@ -143,6 +162,7 @@ const Manager = () => {
                   <th className="py-2">Site</th>
                   <th className="py-2">Username</th>
                   <th className="py-2">Password</th>
+                  <th className="py-2">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-green-200">
@@ -167,7 +187,7 @@ const Manager = () => {
                                 paddingTop: "3px",
                                 paddingLeft: "5px",
                               }}
-                              src="https://cdn.lordicon.com/hmqggwrl.json"
+                              src="https://cdn.lordicon.com/iykgtsbt.json"
                               trigger="hover"
                             ></lord-icon>
                           </div>
@@ -189,7 +209,7 @@ const Manager = () => {
                                 paddingTop: "3px",
                                 paddingLeft: "5px",
                               }}
-                              src="https://cdn.lordicon.com/hmqggwrl.json"
+                              src="https://cdn.lordicon.com/iykgtsbt.json"
                               trigger="hover"
                             ></lord-icon>
                           </div>
@@ -212,11 +232,28 @@ const Manager = () => {
                                 paddingTop: "3px",
                                 paddingLeft: "5px",
                               }}
-                              src="https://cdn.lordicon.com/hmqggwrl.json"
+                              src="https://cdn.lordicon.com/iykgtsbt.json"
                               trigger="hover"
                             ></lord-icon>
                           </div>
                         </div>
+                      </td>
+                      <td className=" py-2 border border-white text-center  ">
+                        <span className="cursor-pointer mx-1" onClick={()=>{editPassword(item.id)}}>
+                          <lord-icon
+                            src="https://cdn.lordicon.com/gwlusjdu.json"
+                            trigger="hover"
+                            style = {{"width":"25px", "height":"25px"}}
+                          ></lord-icon>
+                        </span>
+                        <span className="cursor-pointer mx-1" onClick={()=>{deletePassword(item.id)}}>
+                          <lord-icon
+                            src="https://cdn.lordicon.com/skkahier.json"
+                            trigger="hover"
+                            style = {{"width":"25px", "height":"25px"}}
+                          ></lord-icon>
+                          
+                        </span>
                       </td>
                     </tr>
                   );
